@@ -25,13 +25,17 @@ Bienvenue dans notre école
     # affichage de la liste des cours, leur enseignant et leurs élèves
     # school.display_courses_list()
 
-    student = Student("Jean", "Dupont", 20)
-
     student_dao: StudentDao = StudentDao()
 
-    result = student_dao.create(student)
+    # student = Student("Jean", "Dupont", 20)
+    # student_dao.create(student)
 
-    print(result)
+    # student = Student("Marc", "Dupont", 25)
+    # student_dao.update(student)
+
+    student = student_dao.read(4)
+    print(student)
+    student_dao.delete(student)
 
     # print(school.get_course_by_id(1))
     # print(school.get_course_by_id(2))
