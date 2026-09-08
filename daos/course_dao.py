@@ -32,10 +32,11 @@ class CourseDao(Dao[Course]):
                     sql,
                     (course.name, course.start_date, course.end_date, course.teacher.id)
                 )
-                course.id = cursor.lastrowid
+                course_id: int = cursor.lastrowid
+                course.id = course_id
 
             Dao.connection.commit()
-            return course.id
+            return course_id
 
         except pymysql.MySQLError as e:
             Dao.connection.rollback()
