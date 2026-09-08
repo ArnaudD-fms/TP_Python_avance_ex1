@@ -5,6 +5,8 @@ Classe Dao[Student]
 """
 from typing import Optional
 
+import pymysql
+
 from models.student import Student
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -18,19 +20,25 @@ class StudentDao(Dao[Student]):
         :param student: à créer sous forme d'entité Student en BD
         :return: l'id de l'entité insérée en BD (0 si la création a échoué)
         """
-        with Dao.connection.cursor() as cursor:
-            sql = """
-                INSERT INTO person (first_name, last_name, age)
-                VALUES (%s, %s, %s)
-            """
-            cursor.execute(sql, (student.first_name, student.last_name, student.age))
-            id_person = cursor.lastrowid
-            sql = "INSERT INTO student (student_nbr, id_person) VALUES (%s, %s)"
-            cursor.execute(sql, (student.student_nbr, id_person))
+        try:
+            with Dao.connection.cursor() as cursor:
+                sql = """
+                    INSERT INTO person (first_name, last_name, age)
+                    VALUES (%s, %s, %s)
+                """
+                cursor.execute(sql, (student.first_name, student.last_name, student.age))
 
-        Dao.connection.commit()
+                id_person = cursor.lastrowid
+                sql = "INSERT INTO student (student_nbr, id_person) VALUES (%s, %s)"
+                cursor.execute(sql, (student.student_nbr, id_person))
 
-        return student.student_nbr
+            Dao.connection.commit()
+
+            return student.student_nbr
+
+        except pymysql.MySQLError:
+            Dao.connection.rollback()
+            return 0
 
     def read(self, id_student: int) -> Optional[Student]:
         """ Renvoie l'élève correspondant à l'entité dont l'id est id_student
@@ -68,37 +76,42 @@ class StudentDao(Dao[Student]):
                 WHERE student.student_nbr = %s
             """
             cursor.execute(sql, (student.first_name, student.last_name, student.age, student.student_nbr))
-            Dao.connection.commit()
+            result = cursor.rowcount > 0
+        Dao.connection.commit()
 
         # retourne true si une ligne a été update
-        return cursor.rowcount > 0
+        return result
 
     def delete(self, student: Student) -> bool:
-        with Dao.connection.cursor() as cursor:
-            # Récupération de la personne associée à l'étudiant
-            sql = """
-                SELECT id_person FROM student WHERE student_nbr = %s
-            """
-            cursor.execute(sql, (student.student_nbr,))
-            record = cursor.fetchone()
+        try:
+            with Dao.connection.cursor() as cursor:
+                # Récupération de la personne associée à l'étudiant
+                sql = """
+                    SELECT id_person FROM student WHERE student_nbr = %s
+                """
+                cursor.execute(sql, (student.student_nbr,))
+                record = cursor.fetchone()
 
-            if record is None:
-                return False
+                if record is None:
+                    return False
 
-            id_person = record['id_person']
+                id_person = record['id_person']
 
-            # Suppression de l'étudiant
-            sql = """
-            DELETE FROM student WHERE student_nbr = %s
-            """
-            cursor.execute(sql, (student.student_nbr,))
+                # Suppression de l'étudiant
+                sql = """
+                DELETE FROM student WHERE student_nbr = %s
+                """
+                cursor.execute(sql, (student.student_nbr,))
 
-            # 
-            sql = """
-            DELETE FROM person WHERE id_person = %s"""
-            cursor.execute(sql, (id_person,))
+                # Suppression de la personne
+                sql = """
+                DELETE FROM person WHERE id_person = %s"""
+                cursor.execute(sql, (id_person,))
 
             Dao.connection.commit()
+            return True
 
-        return True
+        except pymysql.MySQLError:
+            Dao.connection.rollback()
+            return False
 

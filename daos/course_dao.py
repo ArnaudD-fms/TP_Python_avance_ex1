@@ -3,6 +3,7 @@
 """
 Classe Dao[Course]
 """
+import pymysql
 
 from models.course import Course
 from daos.dao import Dao
@@ -18,8 +19,28 @@ class CourseDao(Dao[Course]):
         :param course: à créer sous forme d'entité Course en BD
         :return: l'id de l'entité insérée en BD (0 si la création a échoué)
         """
-        ...
-        return 0
+        if course.teacher is None or course.teacher.id is None:
+            return 0
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                sql = """
+                    INSERT INTO course (name, start_date, end_date, id_teacher)
+                    VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(
+                    sql,
+                    (course.name, course.start_date, course.end_date, course.teacher.id)
+                )
+                course.id = cursor.lastrowid
+
+            Dao.connection.commit()
+            return course.id
+
+        except pymysql.MySQLError as e:
+            Dao.connection.rollback()
+            print(f"Erreur SQL : {e}")
+            return 0
 
     def read(self, id_course: int) -> Optional[Course]:
         """Renvoit le cours correspondant à l'entité dont l'id est id_course
@@ -44,8 +65,19 @@ class CourseDao(Dao[Course]):
         :param course: cours déjà mis à jour en mémoire
         :return: True si la mise à jour a pu être réalisée
         """
-        ...
-        return True
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                UPDATE course
+                SET name=%s, start_date=%s, end_date=%s
+                WHERE id_course=%s
+            """
+            cursor.execute(sql, (course.name, course.start_date, course.end_date, course.id))
+            result = cursor.rowcount > 0
+
+        Dao.connection.commit()
+
+        # retourne true si une ligne a été update
+        return result
 
     def delete(self, course: Course) -> bool:
         """Supprime en BD l'entité Course correspondant à course
@@ -53,5 +85,13 @@ class CourseDao(Dao[Course]):
         :param course: cours dont l'entité Course correspondante est à supprimer
         :return: True si la suppression a pu être réalisée
         """
-        ...
-        return True
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                DELETE FROM course WHERE id_course=%s
+            """
+            cursor.execute(sql, (course.id,))
+            result = cursor.rowcount > 0
+
+        Dao.connection.commit()
+
+        return result
