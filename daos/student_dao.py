@@ -36,8 +36,9 @@ class StudentDao(Dao[Student]):
 
             return student.student_nbr
 
-        except pymysql.MySQLError:
+        except pymysql.MySQLError as e:
             Dao.connection.rollback()
+            print(f"Erreur SQL : {e}")
             return 0
 
     def read(self, id_student: int) -> Optional[Student]:
@@ -49,7 +50,7 @@ class StudentDao(Dao[Student]):
             sql = """
                 SELECT *
                 FROM student
-                JOIN person ON student.student_nbr = person.id_person
+                JOIN person ON student.id_person = person.id_person
                 WHERE student_nbr = %s
             """
             cursor.execute(sql, (id_student,))
@@ -83,6 +84,11 @@ class StudentDao(Dao[Student]):
         return result
 
     def delete(self, student: Student) -> bool:
+        """Supprime en BD l'entité Student correspondant à student
+
+        :param student: élève dont l'entité Student correspondante est à supprimer
+        :return: True si la suppression a pu être réalisée
+        """
         try:
             with Dao.connection.cursor() as cursor:
                 # Récupération de la personne associée à l'étudiant
