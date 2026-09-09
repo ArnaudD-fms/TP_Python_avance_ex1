@@ -71,4 +71,19 @@ class AddressDao(Dao[Address]):
         return result
 
     def delete(self, address: Address) -> bool:
-        pass
+        """Supprime en BD l'entité Address correspondant à address
+
+        :param address: adresse dont l'entité Address correspondante est à supprimer
+        :return: True si la suppression a pu être réalisée
+        """
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                DELETE FROM address WHERE id_address = %s
+            """
+            cursor.execute(sql, (address.id,))
+            result = cursor.rowcount > 0
+
+        Dao.connection.commit()
+
+        return result
+    

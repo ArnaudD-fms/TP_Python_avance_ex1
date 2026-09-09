@@ -54,3 +54,19 @@ class TestAdressDao(unittest.TestCase):
         self.assertEqual(updated_address.street, "new_street_test")
         self.assertEqual(updated_address.city, "new_city_test")
         self.assertEqual(updated_address.postal_code, 22222)
+
+    def test_delete_address(self):
+        # Création d'une nouvelle adresse
+        address = Address("street_test", "city_test", 11111)
+        address_id = self.address_dao.create(address)
+
+        # On vérifie que la création a fonctionné
+        self.assertNotEqual(address_id, 0)
+
+        # Suppression du cours
+        result = self.address_dao.delete(address)
+        self.assertTrue(result)
+        deleted_course = self.address_dao.read(address_id)
+        self.assertIsNone(deleted_course)
+
+
