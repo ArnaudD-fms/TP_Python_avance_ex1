@@ -44,7 +44,7 @@ class CourseDao(Dao[Course]):
             return 0
 
     def read(self, id_course: int) -> Optional[Course]:
-        """Renvoit le cours correspondant à l'entité dont l'id est id_course
+        """Renvoie le cours correspondant à l'entité dont l'id est id_course
            (ou None s'il n'a pu être trouvé)"""
         course: Optional[Course]
         
@@ -61,9 +61,9 @@ class CourseDao(Dao[Course]):
         return course
 
     def update(self, course: Course) -> bool:
-        """Met à jour en BD l'entité Course correspondant à course, pour y correspondre
+        """Met à jour en BD l'entité Course correspondant à course
 
-        :param course: cours déjà mis à jour en mémoire
+        :param course: cours mis à jour
         :return: True si la mise à jour a pu être réalisée
         """
         with Dao.connection.cursor() as cursor:

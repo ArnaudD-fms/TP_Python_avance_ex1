@@ -66,7 +66,7 @@ class StudentDao(Dao[Student]):
     def update(self, student: Student) -> bool:
         """Met à jour en BD l'entité Student correspondant au student en paramètre
 
-        :param student: l'élève à mettre à jour
+        :param student: élève mis à jour
         :return: True si la mise à jour a pu être réalisée
         """
         with Dao.connection.cursor() as cursor:
@@ -120,4 +120,3 @@ class StudentDao(Dao[Student]):
         except pymysql.MySQLError:
             Dao.connection.rollback()
             return False
-
