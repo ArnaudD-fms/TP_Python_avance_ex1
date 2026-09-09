@@ -1,6 +1,7 @@
 import unittest
 
 from daos.address_dao import AddressDao
+from daos.dao import Dao
 from models.address import Address
 
 
@@ -68,5 +69,19 @@ class TestAdressDao(unittest.TestCase):
         self.assertTrue(result)
         deleted_course = self.address_dao.read(address_id)
         self.assertIsNone(deleted_course)
+
+    def tearDown(self):
+        with Dao.connection.cursor() as cursor:
+            cursor.execute("SELECT COALESCE(MAX(id_address), 0) + 1 AS next_id FROM address")
+            next_id = cursor.fetchone()["next_id"]
+
+            cursor.execute(
+                f"ALTER TABLE address AUTO_INCREMENT = {next_id}"
+            )
+
+        Dao.connection.commit()
+
+    if __name__ == '__main__':
+        unittest.main()
 
 

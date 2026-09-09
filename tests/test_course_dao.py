@@ -2,6 +2,7 @@ import unittest
 
 from datetime import date
 from daos.course_dao import CourseDao
+from daos.dao import Dao
 from models.course import Course
 from models.teacher import Teacher
 
@@ -105,6 +106,17 @@ class TestCourseDao(unittest.TestCase):
         self.assertTrue(result)
         deleted_course = self.course_dao.read(course_id)
         self.assertIsNone(deleted_course)
+
+    def tearDown(self):
+        with Dao.connection.cursor() as cursor:
+            cursor.execute("SELECT COALESCE(MAX(id_course), 0) + 1 AS next_id FROM course")
+            next_id = cursor.fetchone()["next_id"]
+
+            cursor.execute(
+                f"ALTER TABLE course AUTO_INCREMENT = {next_id}"
+            )
+
+        Dao.connection.commit()
 
     if __name__ == '__main__':
         unittest.main()

@@ -86,4 +86,3 @@ class AddressDao(Dao[Address]):
         Dao.connection.commit()
 
         return result
-    

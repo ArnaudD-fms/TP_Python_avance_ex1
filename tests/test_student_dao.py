@@ -80,3 +80,16 @@ class TestStudentDao(unittest.TestCase):
         deleted_student = self.student_dao.read(student_id)
         self.assertIsNone(deleted_student)
 
+    def tearDown(self):
+        with Dao.connection.cursor() as cursor:
+            cursor.execute("SELECT COALESCE(MAX(id_person), 0) + 1 AS next_id FROM person")
+            next_id = cursor.fetchone()["next_id"]
+
+            cursor.execute(
+                f"ALTER TABLE person AUTO_INCREMENT = {next_id}"
+            )
+
+        Dao.connection.commit()
+
+    if __name__ == '__main__':
+        unittest.main()
