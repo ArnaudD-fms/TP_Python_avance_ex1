@@ -11,6 +11,8 @@ from daos.dao import Dao
 from dataclasses import dataclass
 from typing import Optional
 
+from models.student import Student
+
 
 @dataclass
 class CourseDao(Dao[Course]):
@@ -119,3 +121,30 @@ class CourseDao(Dao[Course]):
         Dao.connection.commit()
 
         return result
+
+    def read_student_numbers(self, course: Course) -> list[int]:
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT student_nbr
+                FROM takes
+                WHERE id_course = %s
+            """
+            cursor.execute(sql, (course.id,))
+            records = cursor.fetchall()
+
+        return [record['student_nbr'] for record in records]
+
+    def read_teacher_id(self, course: Course) -> int | None:
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT id_teacher
+                FROM course
+                WHERE id_course = %s
+            """
+            cursor.execute(sql, (course.id,))
+            record = cursor.fetchone()
+
+        if record is None:
+            return None
+
+        return record['id_teacher']

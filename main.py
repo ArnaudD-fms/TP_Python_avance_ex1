@@ -26,39 +26,7 @@ Bienvenue dans notre école
     school.init_static()
 
     # affichage de la liste des cours, leur enseignant et leurs élèves
-    # school.display_courses_list()
-
-    student_dao: StudentDao = StudentDao()
-
-    # student = Student("Jean", "Dupont", 20)
-    # student_dao.create(student)
-
-    # student = Student("Marc", "Dupont", 25)
-    # student_dao.update(student)
-
-    # student = student_dao.read(student.student_nbr)
-    # print(student)
-    # student_dao.delete(student_dao.read(4))
-
-
-    course_dao: CourseDao = CourseDao()
-
-    # course = Course("cuisine", date(2026, 10, 5), date(2026, 10, 6))
-    # course.set_teacher(school.teachers[0])
-    # course.teacher.id = 1
-    # course_dao.create(course)
-
-    # course = Course("cuisine", date(2026, 10, 7), date(2026, 10, 8))
-    # course.id = 9
-    # course_dao.update(course)
-
-    # course_dao.delete(course)
-
-    # print(course_dao.read(course.id))
-
-    # print(school.get_course_by_id(1))
-    # print(school.get_course_by_id(2))
-    # print(school.get_course_by_id(9))
+    school.display_courses_list()
 
 
 if __name__ == '__main__':
