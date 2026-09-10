@@ -6,7 +6,7 @@ from daos.teacher_dao import TeacherDao
 from models.teacher import Teacher
 
 
-class testTeacherDao(unittest.TestCase):
+class TestTeacherDao(unittest.TestCase):
 
     def setUp(self):
         self.teacher_dao = TeacherDao()
