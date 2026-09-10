@@ -27,6 +27,16 @@ class TestCourseDao(unittest.TestCase):
 
         self.assertIsNone(course)
 
+    def test_read_all_course(self):
+        courses = self.course_dao.read_all()
+
+        self.assertIsInstance(courses, list)
+        self.assertGreater(len(courses), 0)
+
+        for course in courses:
+            self.assertIsInstance(course, Course)
+            self.assertIsNotNone(course.id)
+
     def test_create_course(self):
         course = Course("Creation_test", date(2026, 9, 8), date(2026, 9, 9))
 

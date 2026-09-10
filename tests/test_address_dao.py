@@ -24,6 +24,16 @@ class TestAdressDao(unittest.TestCase):
         address = self.address_dao.read(999999)
         self.assertIsNone(address)
 
+    def test_read_all_address(self):
+        addresses = self.address_dao.read_all()
+
+        self.assertIsInstance(addresses, list)
+        self.assertGreater(len(addresses), 0)
+
+        for address in addresses:
+            self.assertIsInstance(address, Address)
+            self.assertIsNotNone(address.id)
+
     def test_create_address(self):
         address = Address("street_test", "city_test", 11111)
 

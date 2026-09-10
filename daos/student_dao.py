@@ -63,6 +63,30 @@ class StudentDao(Dao[Student]):
 
         return student
 
+    def read_all(self) -> list[Student]:
+        """Renvoie la liste de tous les élèves"""
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT *
+                FROM student
+                JOIN person ON student.id_person = person.id_person
+            """
+            cursor.execute(sql)
+            records = cursor.fetchall()
+
+        students = []
+
+        for record in records:
+            student = Student(
+                record['first_name'],
+                record['last_name'],
+                record['age']
+            )
+            student.student_nbr = record['student_nbr']
+            students.append(student)
+
+        return students
+
     def update(self, student: Student) -> bool:
         """Met à jour en BD l'entité Student correspondant au student en paramètre
 

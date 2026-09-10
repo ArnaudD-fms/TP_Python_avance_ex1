@@ -58,6 +58,28 @@ class AddressDao(Dao[Address]):
 
         return address
 
+    def read_all(self) -> list[Address]:
+        """Renvoie la liste des adresses"""
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT * FROM address  
+            """
+            cursor.execute(sql)
+            records = cursor.fetchall()
+
+        addresses = []
+
+        for record in records:
+            address = Address(
+                record['street'],
+                record['city'],
+                record['postal_code']
+            )
+            address.id = record['id_address']
+            addresses.append(address)
+
+        return addresses
+
     def update(self, address: Address) -> bool:
         """Met à jour en BD l'entité Address correspondant à address
 

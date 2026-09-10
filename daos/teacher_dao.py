@@ -66,6 +66,31 @@ class TeacherDao(Dao[Teacher]):
 
         return teacher
 
+    def read_all(self) -> list[Teacher]:
+        """Renvoie la liste des professeurs"""
+        with Dao.connection.cursor() as cursor:
+            sql = """
+                SELECT * 
+                FROM teacher 
+                JOIN person ON teacher.id_person = person.id_person
+            """
+            cursor.execute(sql)
+            records = cursor.fetchall()
+
+        teachers = []
+
+        for record in records:
+            teacher = Teacher(
+                record['first_name'],
+                record['last_name'],
+                record['age'],
+                record['hiring_date']
+            )
+            teacher.id = record['id_teacher']
+            teachers.append(teacher)
+
+        return teachers
+
     def update(self, teacher: Teacher) -> bool:
         """Met à jour en BD l'entité Teacher correspondant au teacher en paramètre
 

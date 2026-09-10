@@ -27,6 +27,16 @@ class TestTeacherDao(unittest.TestCase):
 
         self.assertIsNone(teacher)
 
+    def test_read_all_teacher(self):
+        teachers = self.teacher_dao.read_all()
+
+        self.assertIsInstance(teachers, list)
+        self.assertGreater(len(teachers), 0)
+
+        for teacher in teachers:
+            self.assertIsInstance(teacher, Teacher)
+            self.assertIsNotNone(teacher.id)
+
     def test_create_teacher(self):
         teacher = Teacher("first_name_test", "last_name_test", 99, date.today())
 

@@ -36,6 +36,16 @@ class TestStudentDao(unittest.TestCase):
 
         self.assertIsNone(student)
 
+    def test_read_all_student(self):
+        students = self.student_dao.read_all()
+
+        self.assertIsInstance(students, list)
+        self.assertGreater(len(students), 0)
+
+        for student in students:
+            self.assertIsInstance(student, Student)
+            self.assertIsNotNone(student.student_nbr)
+
     def test_create_student(self):
         student = Student("first_name_test", "last_name_test", 99)
 
