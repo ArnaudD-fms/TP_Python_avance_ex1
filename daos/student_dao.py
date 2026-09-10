@@ -3,10 +3,10 @@
 """
 Classe Dao[Student]
 """
-from typing import Optional
 
 import pymysql
 
+from typing import Optional
 from models.student import Student
 from daos.dao import Dao
 from dataclasses import dataclass
@@ -15,7 +15,7 @@ from dataclasses import dataclass
 @dataclass
 class StudentDao(Dao[Student]):
     def create(self, student: Student) -> int:
-        """ Créer en BD l'entité Student correspondant aux élèves
+        """ Créer en BD l'entité Student correspondant à l'élève
 
         :param student: à créer sous forme d'entité Student en BD
         :return: l'id de l'entité insérée en BD (0 si la création a échoué)
@@ -53,7 +53,7 @@ class StudentDao(Dao[Student]):
                 JOIN person ON student.id_person = person.id_person
                 WHERE student_nbr = %s
             """
-            cursor.execute(sql, (id_student,))
+            cursor.execute(sql, id_student)
             record = cursor.fetchone()
         if record is not None:
             student = Student(record['first_name'], record['last_name'], record['age'])
@@ -95,7 +95,7 @@ class StudentDao(Dao[Student]):
                 sql = """
                     SELECT id_person FROM student WHERE student_nbr = %s
                 """
-                cursor.execute(sql, (student.student_nbr,))
+                cursor.execute(sql, student.student_nbr)
                 record = cursor.fetchone()
 
                 if record is None:
@@ -107,12 +107,12 @@ class StudentDao(Dao[Student]):
                 sql = """
                 DELETE FROM student WHERE student_nbr = %s
                 """
-                cursor.execute(sql, (student.student_nbr,))
+                cursor.execute(sql, student.student_nbr)
 
                 # Suppression de la personne
                 sql = """
                 DELETE FROM person WHERE id_person = %s"""
-                cursor.execute(sql, (id_person,))
+                cursor.execute(sql, id_person)
 
             Dao.connection.commit()
             return True

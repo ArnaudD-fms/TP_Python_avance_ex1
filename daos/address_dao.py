@@ -1,9 +1,13 @@
-from dataclasses import dataclass
-from typing import Optional
+# -*- coding: utf-8 -*-
+
+"""
+Classe Dao[Address]
+"""
 
 import pymysql
-from thonny.vendored_libs.pipkin import connection
 
+from dataclasses import dataclass
+from typing import Optional
 from daos.dao import Dao
 from models.address import Address
 
@@ -38,11 +42,13 @@ class AddressDao(Dao[Address]):
     def read(self, id_address: int) -> Optional[Address]:
         """Renvoie l'adresse correspondante à l'entité dont l'id est id_address
            (ou None s'il n'a pu être trouvé)"""
+        address: Optional[Address]
+
         with Dao.connection.cursor() as cursor:
             sql = """
                 SELECT * FROM address  WHERE id_address = %s
             """
-            cursor.execute(sql, (id_address,))
+            cursor.execute(sql, id_address)
             record = cursor.fetchone()
             if record is not None:
                 address = Address(record['street'], record['city'], record['postal_code'])

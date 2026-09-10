@@ -3,6 +3,7 @@
 """
 Classe Dao[Course]
 """
+
 import pymysql
 
 from models.course import Course
@@ -50,7 +51,7 @@ class CourseDao(Dao[Course]):
         
         with Dao.connection.cursor() as cursor:
             sql = "SELECT * FROM course WHERE id_course=%s"
-            cursor.execute(sql, (id_course,))
+            cursor.execute(sql, id_course)
             record = cursor.fetchone()
         if record is not None:
             course = Course(record['name'], record['start_date'], record['end_date'])
